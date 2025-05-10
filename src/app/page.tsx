@@ -12,7 +12,7 @@ export default function Home() {
     return (
         <div className="flex items-center flex-col mx-auto justify-center min-h-screen">
             <div className="sticky top-0 flex flex-col items-center px-5 pt-5 justify-center w-full ring-green-900 bg-background">
-                <div className="max-w-2xl w-full h-full rounded-t-2xl max-h-[50rem] min-h-[50rem] p-5">
+                <div className="max-w-2xl w-full h-full rounded-t-2xl max-h-[50rem] md:min-h-[50rem] p-5">
                     <Canvas selectedMask={selectedMask} selectedImage={selectedImage} />
                 </div>
             </div>
