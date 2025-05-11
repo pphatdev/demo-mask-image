@@ -1,4 +1,16 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+![](./public/assets/screenshots/maskify.png)
+
+# Maskify - Image Masking Tool
+
+Maskify is a web application that allows you to create and customize masks for your images. It provides a user-friendly interface and a variety of features to help you achieve the perfect mask for your photos.
+
+## Features
+
+- **Image Masking**: Upload and apply custom masks to your images
+- **Mask Library**: Save and reuse masks for future editing sessions
+- **Browser Storage**: Masks are saved in browser storage for easy access
+- **File Management**: Upload, select, and manage your mask files
+- **User-Friendly Interface**: Simple and intuitive controls for easy editing
 
 ## Getting Started
 
@@ -14,23 +26,26 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How to Use
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Upload a Mask**: Click the upload button to select a mask image file
+2. **Select a Mask**: Choose from your previously uploaded masks in the library
+3. **Edit Your Image**: Apply the selected mask to your image
+4. **Save Your Work**: Your masks are automatically saved to browser storage
 
-## Learn More
+## Technical Details
 
-To learn more about Next.js, take a look at the following resources:
+- **File Size Limitations**: Masks larger than 5MB may be too large to save in browser storage but will be available for the current session
+- **Supported File Types**: Standard image formats including PNG, JPEG, etc.
+- **Data Storage**: Uses browser session storage to maintain your mask library
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The application is deployed at [https://maskify.pphat.top](https://maskify.pphat.top)
 
-## Deploy on Vercel
+## Contributors
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+![](https://contrib.rocks/image?repo=pphatlabs/maskify)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
