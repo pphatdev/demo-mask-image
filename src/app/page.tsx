@@ -3,6 +3,7 @@ import { Canvas } from "@app/components/canvas/main-canvas";
 import { Images } from "@app/components/controls/images";
 import { Masks } from "@app/components/controls/masks";
 import React, { useState } from "react";
+import { Footer } from "./components/layout/footer";
 
 export default function Home() {
     // State to track the currently selected mask and image
@@ -21,6 +22,7 @@ export default function Home() {
                 <div className="mx-auto w-full flex flex-col gap-10 max-w-2xl">
                     <Masks selectedMask={selectedMask} onMaskSelect={setSelectedMask} />
                     <Images selectedImage={selectedImage} onImageSelect={setSelectedImage} />
+                    <Footer />
                 </div>
             </div>
         </div>
