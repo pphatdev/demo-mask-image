@@ -33,10 +33,10 @@ export const metadata: Metadata = {
         siteName: title,
         images: [
             {
-                url: "/logo/logo.png",
+                url: "/assets/screenshots/maskify.png",
                 width: 1200,
                 height: 630,
-                alt: "Maskify - Image Masking Tool",
+                alt: title,
             },
         ],
         locale: "en_US",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: title,
         description: description,
-        images: ["/logo/logo.png"],
+        images: "/assets/screenshots/maskify.png",
         creator: "@pphatdev",
     },
     icons: {
