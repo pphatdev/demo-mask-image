@@ -9,6 +9,14 @@
     --font-sans: "Poppins", "Roboto", "Kantumruy Pro", sans-serif;
 }
 
+.dark {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+
+    --primary: 163 96% 25%;
+    --primary-foreground: 0 0% 98%;
+}
+
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -17,14 +25,4 @@
 
     --color-primary:hsl(var(--primary));;
     --color-primary-foreground: hsl(var(--primary-foreground));
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #0a0a0a;
-        --foreground: #ededed;
-
-        --primary: 163 96% 25%;
-        --primary-foreground: 0 0% 98%;
-    }
 }
