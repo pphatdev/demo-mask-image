@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { SaveButton } from '../controls/save-button';
+import { Riple } from 'react-loading-indicators';
 
 type CanvasProps = {
     selectedMask: string | null;
@@ -10,7 +11,7 @@ type CanvasProps = {
 
 export const Canvas = ({ selectedMask, selectedImage }: CanvasProps) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const loadImage = (src: string) => {
         return new Promise<HTMLImageElement>((resolve, reject) => {
@@ -76,9 +77,9 @@ export const Canvas = ({ selectedMask, selectedImage }: CanvasProps) => {
 
     return (
         <div className='relative w-full h-full'>
-            {loading && <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10">Loading...</div>}
+            { loading && <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10"> <Riple color="#32cd32" size="large" /> </div> }
             <SaveButton onClick={onSave} />
-            <canvas ref={canvasRef} className="h-full z-50 w-full bg-center border border-foreground/10 rounded-4xl" />
+            <canvas ref={canvasRef} className="h-full z-50 aspect-square w-full bg-center border border-foreground/10 rounded-4xl" />
         </div>
     );
 };
