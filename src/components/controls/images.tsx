@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useExampleImages } from '@app/hooks/useExampleImages';
 import Image from 'next/image';
+import { DownloadIcon, UploadIcon } from '@radix-ui/react-icons';
 
 type ImageItem = {
     id: number;
@@ -10,14 +11,25 @@ type ImageItem = {
 
 type ImagesProps = {
     selectedImage?: string | null;
-    onImageSelect?: (imagePath: string) => void;
+    setSelectedImage: (imagePath: string | null) => void;
 };
 
-export const Images = ({ selectedImage, onImageSelect }: ImagesProps = {}) => {
+export const Images = ({ selectedImage, setSelectedImage }: ImagesProps) => {
     const [displayImages, setDisplayImages] = useState<ImageItem[]>([]);
     const { images, loading, error } = useExampleImages();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [storageError, setStorageError] = useState<string | null>(null);
+
+    // Load images from session storage
+    const loadImagesFromSession = useCallback((): ImageItem[] => {
+        try {
+            const storedImages = sessionStorage.getItem('uploadedImages');
+            return storedImages ? JSON.parse(storedImages) : [];
+        } catch (err) {
+            console.error('Failed to load images from session storage:', err);
+            return [];
+        }
+    }, []);
 
     // On initial load, check if there was a previously selected image ID
     useEffect(() => {
@@ -27,17 +39,17 @@ export const Images = ({ selectedImage, onImageSelect }: ImagesProps = {}) => {
             const allImages = loadImagesFromSession();
             const selectedImg = allImages.find(img => img.id.toString() === savedSelectionId);
 
-            if (selectedImg && onImageSelect) {
-                onImageSelect(selectedImg.path);
+            if (selectedImg) {
+                setSelectedImage(selectedImg.path);
             } else {
                 // If we can't find the image by ID, try to use the old path method
                 const savedPath = sessionStorage.getItem('selectedImage');
-                if (savedPath && onImageSelect) {
-                    onImageSelect(savedPath);
+                if (savedPath) {
+                    setSelectedImage(savedPath);
                 }
             }
         }
-    }, [onImageSelect]);
+    }, [setSelectedImage, loadImagesFromSession]);
 
     // Load images from both API and session storage
     useEffect(() => {
@@ -56,10 +68,10 @@ export const Images = ({ selectedImage, onImageSelect }: ImagesProps = {}) => {
             // Combine both sources
             setDisplayImages([...imageList, ...sessionImages]);
         }
-    }, [images]);
+    }, [images, loadImagesFromSession]);
 
     // Save uploaded images to session storage
-    const saveImageToSession = (image: ImageItem) => {
+    const saveImageToSession = useCallback((image: ImageItem) => {
         try {
             // Get existing stored images
             const storedImages = JSON.parse(sessionStorage.getItem('uploadedImages') || '[]');
@@ -84,42 +96,29 @@ export const Images = ({ selectedImage, onImageSelect }: ImagesProps = {}) => {
             console.error('Failed to save image to session storage:', err);
             return false;
         }
-    };
-
-    // Load images from session storage
-    const loadImagesFromSession = (): ImageItem[] => {
-        try {
-            const storedImages = sessionStorage.getItem('uploadedImages');
-            return storedImages ? JSON.parse(storedImages) : [];
-        } catch (err) {
-            console.error('Failed to load images from session storage:', err);
-            return [];
-        }
-    };
+    }, []);
 
     // Save selected image reference by ID instead of path
-    const saveSelectedImageId = (imageId: number) => {
+    const saveSelectedImageId = useCallback((imageId: number) => {
         try {
             sessionStorage.setItem('selectedImageId', imageId.toString());
         } catch (storageErr) {
             console.error('Failed to save selected image ID to storage:', storageErr);
             setStorageError('Selected image reference could not be saved due to storage limitations.');
         }
-    };
+    }, []);
 
-    const handleImageClick = (image: ImageItem) => {
-        if (onImageSelect) {
-            // Save the selected image ID instead of the full path
-            saveSelectedImageId(image.id);
-            onImageSelect(image.path);
-        }
-    };
+    const handleImageClick = useCallback((image: ImageItem) => {
+        // Save the selected image ID instead of the full path
+        saveSelectedImageId(image.id);
+        setSelectedImage(image.path);
+    }, [setSelectedImage, saveSelectedImageId]);
 
-    const handleUploadClick = () => {
+    const handleUploadClick = useCallback(() => {
         fileInputRef.current?.click();
-    };
+    }, []);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             // Check file size before processing
@@ -148,10 +147,8 @@ export const Images = ({ selectedImage, onImageSelect }: ImagesProps = {}) => {
                 saveImageToSession(newImage);
 
                 // Automatically select the new image using ID instead of path
-                if (onImageSelect) {
-                    saveSelectedImageId(newImageId);
-                    onImageSelect(dataUrl);
-                }
+                saveSelectedImageId(newImageId);
+                setSelectedImage(dataUrl);
             };
 
             // Read file as data URL
@@ -162,21 +159,22 @@ export const Images = ({ selectedImage, onImageSelect }: ImagesProps = {}) => {
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
-    };
+    }, [setSelectedImage, saveImageToSession, saveSelectedImageId]);
 
     return (
         <section id='gallery-images'>
-            <h2 className="text-2xl font-bold mb-4">Gallery Images</h2>
             {error && <p className="text-red-500">Error loading examples images: {error}</p>}
             {storageError && <p className="text-amber-500 mb-2">{storageError}</p>}
-            <div className="grid grid-cols-6 gap-4 select-none">
+            <div className="flex space-x-4 py-2.5 overflow-x-auto overflow-y-hidden px-1 select-none">
                 {loading ? (
                     <>
-                        {[...Array(12)].map((_, index) => (
+                        {[...Array(7)].map((_, index) => (
                             <div
                                 key={`skeleton-${index}`}
-                                className="aspect-square bg-foreground/5 rounded-lg animate-pulse"
-                            />
+                                className="aspect-square relative mb-3 size-14 bg-foreground/5 rounded-lg animate-pulse"
+                            >
+                                <span className="text-[12px] w-full text-foreground h-3 rounded-full bg-foreground/5 animate-pulse text-center absolute inset-x-0 -bottom-5"></span>
+                            </div>
                         ))}
                     </>
                 ) : (
@@ -184,7 +182,7 @@ export const Images = ({ selectedImage, onImageSelect }: ImagesProps = {}) => {
                         {displayImages.map((image) => (
                             <div
                                 key={image.id}
-                                className={`aspect-square bg-foreground/5 rounded-lg cursor-pointer hover:ring-2 transition-all ${selectedImage === image.path ? 'ring-2 ring-primary' : 'ring-primary/0'}`}
+                                className={`aspect-square size-14 bg-foreground/5 relative mb-2 rounded cursor-pointer hover:ring-2 transition-all ${selectedImage === image.path ? 'ring-2 ring-primary' : 'ring-primary/0'}`}
                                 onClick={() => handleImageClick(image)}
                             >
                                 <Image
@@ -192,23 +190,27 @@ export const Images = ({ selectedImage, onImageSelect }: ImagesProps = {}) => {
                                     alt={image.name}
                                     width={100}
                                     height={100}
-                                    className="w-full h-full object-fill rounded-lg aspect-square"
+                                    className="w-full h-full object-cover rounded aspect-square"
                                     onError={(e) => {
                                         console.error(`Failed to load image: ${image.path}`);
                                         (e.target as HTMLImageElement).style.display = 'none';
                                     }}
                                 />
+                                <span className="text-[12px] text-foreground w-full text-center absolute inset-x-0 -bottom-5 line-clamp-1">{image.name}</span>
                             </div>
                         ))}
-                        {/* Upload button */}
-                        <div
-                            className="aspect-square bg-foreground/5 rounded-lg cursor-pointer hover:ring-2 hover:ring-primary transition-all flex items-center justify-center"
-                            onClick={handleUploadClick}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span className="sr-only">Upload image</span>
+
+                        <div className='bg-foreground/5 z-50 absolute right-3 top-3 ring-1 w-fit ml-auto ring-foreground/10 justify-end flex rounded-full p-1'>
+                            <button
+                                aria-label={`Browse`}
+                                type="button"
+                                onClick={handleUploadClick}
+                                className="flex cursor-pointer rounded-full p-2 hover:ring hover:text-primary ring-foreground/20 outline-none hover:bg-foreground/10 transition-all items-center justify-center"
+                            >
+                                <UploadIcon className='size-4' />
+                                <span className="sr-only">Browse</span>
+                            </button>
+
                             <input
                                 type="file"
                                 ref={fileInputRef}
