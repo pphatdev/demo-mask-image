@@ -76,10 +76,10 @@ export const Canvas = ({ selectedMask, selectedImage }: CanvasProps) => {
     }, [selectedMask, selectedImage]);
 
     return (
-        <div className='relative w-full h-full'>
+        <div className='bg-background'>
             { loading && <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10"> <Riple color="#32cd32" size="large" /> </div> }
             <SaveButton onClick={onSave} />
-            <canvas ref={canvasRef} className="h-full z-50 aspect-square w-full bg-center border border-foreground/10 rounded-4xl" />
+            <canvas ref={canvasRef} className="h-full z-50 aspect-square w-full bg-center" />
         </div>
     );
 };
