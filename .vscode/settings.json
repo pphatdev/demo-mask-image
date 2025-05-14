@@ -1,0 +1,12 @@
+{
+    "tailwindCSS.experimental.configFile": "",
+    "tailwindCSS.includeLanguages": {
+        "javascript": "javascriptreact",
+        "typescript": "typescriptreact"
+    },
+    "tailwindCSS.emmetCompletions": true,
+    "tailwindCSS.validate": true,
+    "tailwindCSS.lint.invalidApply": "error",
+    "tailwindCSS.lint.invalidScreen": "error",
+    "tailwindCSS.lint.invalidVariant": "error",
+}

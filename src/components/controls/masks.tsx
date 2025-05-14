@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useExampleMasks } from '@app/hooks/useExampleMasks';
 import Image from 'next/image';
+import { UploadIcon } from '@radix-ui/react-icons';
 
 type MaskItem = {
     id: number;
@@ -10,10 +11,10 @@ type MaskItem = {
 
 type MasksProps = {
     selectedMask?: string | null;
-    onMaskSelect?: (maskPath: string) => void;
+    setSelectedMask: (maskPath: string | null) => void;
 };
 
-export const Masks = ({ selectedMask, onMaskSelect }: MasksProps = {}) => {
+export const Masks = ({ selectedMask, setSelectedMask }: MasksProps) => {
     const [displayMasks, setDisplayMasks] = useState<MaskItem[]>([]);
     const { masks, loading, error } = useExampleMasks();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -36,19 +37,19 @@ export const Masks = ({ selectedMask, onMaskSelect }: MasksProps = {}) => {
         if (savedSelectionId) {
             // Find the mask with this ID
             const allMasks = loadMasksFromSession();
-            const selectedMask = allMasks.find(mask => mask.id.toString() === savedSelectionId);
+            const selectedMaskItem = allMasks.find(mask => mask.id.toString() === savedSelectionId);
 
-            if (selectedMask && onMaskSelect) {
-                onMaskSelect(selectedMask.path);
+            if (selectedMaskItem) {
+                setSelectedMask(selectedMaskItem.path);
             } else {
                 // If we can't find the mask by ID, try to use the old path method
                 const savedPath = sessionStorage.getItem('selectedMask');
-                if (savedPath && onMaskSelect) {
-                    onMaskSelect(savedPath);
+                if (savedPath) {
+                    setSelectedMask(savedPath);
                 }
             }
         }
-    }, [onMaskSelect, loadMasksFromSession]);
+    }, [setSelectedMask, loadMasksFromSession]);
 
     // Load masks from both API and session storage
     useEffect(() => {
@@ -108,12 +109,10 @@ export const Masks = ({ selectedMask, onMaskSelect }: MasksProps = {}) => {
     }, []);
 
     const handleMaskClick = useCallback((mask: MaskItem) => {
-        if (onMaskSelect) {
-            // Save the selected mask ID instead of the full path
-            saveSelectedMaskId(mask.id);
-            onMaskSelect(mask.path);
-        }
-    }, [onMaskSelect, saveSelectedMaskId]);
+        // Save the selected mask ID instead of the full path
+        saveSelectedMaskId(mask.id);
+        setSelectedMask(mask.path);
+    }, [setSelectedMask, saveSelectedMaskId]);
 
     const handleUploadClick = useCallback(() => {
         fileInputRef.current?.click();
@@ -148,10 +147,8 @@ export const Masks = ({ selectedMask, onMaskSelect }: MasksProps = {}) => {
                 saveMaskToSession(newMask);
 
                 // Automatically select the new mask using ID instead of path
-                if (onMaskSelect) {
-                    saveSelectedMaskId(newMaskId);
-                    onMaskSelect(dataUrl);
-                }
+                saveSelectedMaskId(newMaskId);
+                setSelectedMask(dataUrl);
             };
 
             // Read file as data URL
@@ -162,21 +159,22 @@ export const Masks = ({ selectedMask, onMaskSelect }: MasksProps = {}) => {
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
-    }, [onMaskSelect, saveMaskToSession, saveSelectedMaskId]);
+    }, [setSelectedMask, saveMaskToSession, saveSelectedMaskId]);
 
     return (
         <section id='gallery-masks'>
-            <h2 className="text-2xl font-bold mb-4">Gallery Masks</h2>
             {error && <p className="text-red-500">Error loading example masks: {error}</p>}
             {storageError && <p className="text-amber-500 mb-2">{storageError}</p>}
-            <div className="grid grid-cols-6 gap-4 select-none">
+            <div className="flex space-x-4 py-2.5 px-1 overflow-x-auto overflow-y-hidden select-none">
                 {loading ? (
                     <>
-                        {[...Array(12)].map((_, index) => (
+                        {[...Array(7)].map((_, index) => (
                             <div
                                 key={`skeleton-${index}`}
-                                className="aspect-square bg-foreground/5 rounded-lg animate-pulse"
-                            />
+                                className="aspect-square relative mb-3 size-14 bg-foreground/10 rounded-lg animate-pulse"
+                            >
+                                <span className="text-[12px] w-full text-foreground h-3 rounded-full bg-foreground/10 animate-pulse text-center absolute inset-x-0 -bottom-5"></span>
+                            </div>
                         ))}
                     </>
                 ) : (
@@ -184,7 +182,7 @@ export const Masks = ({ selectedMask, onMaskSelect }: MasksProps = {}) => {
                         {displayMasks.map((mask) => (
                             <div
                                 key={mask.id}
-                                className={`aspect-square bg-foreground/5 rounded-xl cursor-pointer hover:bg-foreground/10 ring-foreground/20 hover:ring-2 transition-all ${selectedMask === mask.path ? 'ring-2 ring-primary' : 'ring-foreground/20'}`}
+                                className={`aspect-square size-14 relative mb-2.5 shrink-0 bg-white/50 rounded cursor-pointer hover:bg-foreground/10 ring-foreground/20 hover:ring-2 transition-all ${selectedMask === mask.path ? 'ring-2 ring-primary' : 'ring-foreground/20'}`}
                                 onClick={() => handleMaskClick(mask)}
                             >
                                 <Image
@@ -198,17 +196,21 @@ export const Masks = ({ selectedMask, onMaskSelect }: MasksProps = {}) => {
                                         (e.target as HTMLImageElement).style.display = 'none';
                                     }}
                                 />
+                                <span className="text-[12px] text-foreground w-full text-center absolute inset-x-0 -bottom-5 line-clamp-1">{mask.name}</span>
                             </div>
                         ))}
                         {/* Upload button */}
-                        <div
-                            className="aspect-square bg-foreground/5 rounded-lg cursor-pointer hover:ring-2 hover:ring-primary transition-all flex items-center justify-center"
-                            onClick={handleUploadClick}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span className="sr-only">Upload mask</span>
+                        <div className='bg-foreground/10 z-50 absolute right-5 top-3 ring-1 w-fit ml-auto ring-foreground/10 justify-end flex rounded-full p-1'>
+                            <button
+                                aria-label={`Browse`}
+                                type="button"
+                                onClick={handleUploadClick}
+                                className="flex cursor-pointer rounded-full p-2 hover:ring hover:text-primary ring-foreground/20 outline-none hover:bg-foreground/10 transition-all items-center justify-center"
+                            >
+                                <UploadIcon className='size-4' />
+                                <span className="sr-only">Browse</span>
+                            </button>
+
                             <input
                                 type="file"
                                 ref={fileInputRef}
