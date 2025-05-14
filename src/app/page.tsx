@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { GridPattern } from "@app/components/magicui/grid-pattern";
 import { cn } from "@app/lib/utils";
 import { Footer } from "./components/layout/footer";
+import { Header } from "./components/layout/header";
 
 export default function Home() {
     const [selectedMask, setSelectedMask] = useState<string | null>(null);
@@ -29,6 +30,18 @@ export default function Home() {
         router.push('/');
     }
 
+    const handleSave = () => {
+        const canvas = document.querySelector('canvas');
+        if (!canvas) return;
+
+        const link = document.createElement('a');
+        link.download = 'masked-image.png';
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const tab = urlParams.get('tab') as 'masks' | 'images' | null;
@@ -43,7 +56,8 @@ export default function Home() {
 
 
     return (
-        <div className="flex flex-col items-center justify-center max-w-xl mx-auto">
+        <div className="flex flex-col relative items-center justify-center max-w-xl mx-auto">
+            <Header onSave={handleSave} />
             <GridPattern
                 width={30}
                 height={30}
@@ -55,12 +69,12 @@ export default function Home() {
                 )}
             />
             <div className="sticky top-0 flex flex-col items-center justify-center w-full aspect-square">
-                <div className="max-w-2xl w-full flex items-center justify-center max-h-[calc(100vh_-12rem)] h-screen rounded-t-2xl">
+                <div className="max-w-2xl w-full flex items-center translate-y-7 justify-center max-h-[calc(100vh_-12rem)] h-screen rounded-t-2xl">
                     <Canvas selectedMask={selectedMask} selectedImage={selectedImage} />
                 </div>
             </div>
 
-            <div className="flex min-h-[12rem] border-t drop-shadow-md border-foreground/10 rounded-t-4xl flex-col gap-4 w-full bg-background/80 backdrop-blur-lg shadow-2xl p-5 pt-5">
+            <div className="flex min-h-[12rem] border-t drop-shadow-md border-foreground/10 rounded-t-4xl flex-col gap-4 w-full bg-foreground/10 backdrop-blur-lg shadow-2xl p-5 pt-5">
                 <div className="flex flex-col w-full max-w-2xl gap-10 mx-auto">
                     {isMenuView ? (
                         <div className="flex items-center pt-5 justify-center gap-3">
