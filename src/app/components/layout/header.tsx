@@ -1,5 +1,4 @@
 import React from "react";
-import { DownloadIcon } from "lucide-react";
 import { SaveButton } from '../../../components/controls/save-button';
 import { SparklesText } from "@app/components/magicui/sparkles-text";
 import { ThemeSwitch } from "./theme-switch";
