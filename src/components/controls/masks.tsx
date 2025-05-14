@@ -171,9 +171,9 @@ export const Masks = ({ selectedMask, setSelectedMask }: MasksProps) => {
                         {[...Array(7)].map((_, index) => (
                             <div
                                 key={`skeleton-${index}`}
-                                className="aspect-square relative mb-3 size-14 bg-foreground/5 rounded-lg animate-pulse"
+                                className="aspect-square relative mb-3 size-14 bg-foreground/10 rounded-lg animate-pulse"
                             >
-                                <span className="text-[12px] w-full text-foreground h-3 rounded-full bg-foreground/5 animate-pulse text-center absolute inset-x-0 -bottom-5"></span>
+                                <span className="text-[12px] w-full text-foreground h-3 rounded-full bg-foreground/10 animate-pulse text-center absolute inset-x-0 -bottom-5"></span>
                             </div>
                         ))}
                     </>
@@ -182,7 +182,7 @@ export const Masks = ({ selectedMask, setSelectedMask }: MasksProps) => {
                         {displayMasks.map((mask) => (
                             <div
                                 key={mask.id}
-                                className={`aspect-square size-14 relative mb-2.5 shrink-0 bg-foreground/5 rounded cursor-pointer hover:bg-foreground/10 ring-foreground/20 hover:ring-2 transition-all ${selectedMask === mask.path ? 'ring-2 ring-primary' : 'ring-foreground/20'}`}
+                                className={`aspect-square size-14 relative mb-2.5 shrink-0 bg-white/50 rounded cursor-pointer hover:bg-foreground/10 ring-foreground/20 hover:ring-2 transition-all ${selectedMask === mask.path ? 'ring-2 ring-primary' : 'ring-foreground/20'}`}
                                 onClick={() => handleMaskClick(mask)}
                             >
                                 <Image
@@ -200,7 +200,7 @@ export const Masks = ({ selectedMask, setSelectedMask }: MasksProps) => {
                             </div>
                         ))}
                         {/* Upload button */}
-                        <div className='bg-foreground/5 z-50 absolute right-5 top-3 ring-1 w-fit ml-auto ring-foreground/10 justify-end flex rounded-full p-1'>
+                        <div className='bg-foreground/10 z-50 absolute right-5 top-3 ring-1 w-fit ml-auto ring-foreground/10 justify-end flex rounded-full p-1'>
                             <button
                                 aria-label={`Browse`}
                                 type="button"
