@@ -182,7 +182,7 @@ export const Images = ({ selectedImage, setSelectedImage }: ImagesProps) => {
                         {displayImages.map((image) => (
                             <div
                                 key={image.id}
-                                className={`aspect-square size-14 bg-foreground/5 relative mb-2 rounded cursor-pointer hover:ring-2 transition-all ${selectedImage === image.path ? 'ring-2 ring-primary' : 'ring-primary/0'}`}
+                                className={`aspect-square size-14 bg-white/50 relative mb-2 rounded cursor-pointer hover:ring-2 transition-all ${selectedImage === image.path ? 'ring-2 ring-primary' : 'ring-primary/0'}`}
                                 onClick={() => handleImageClick(image)}
                             >
                                 <Image
